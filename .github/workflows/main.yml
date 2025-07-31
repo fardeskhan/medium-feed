@@ -2,15 +2,15 @@ name: Update Medium Feed
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Runs every 6 hours
-  workflow_dispatch:        # Allows manual run
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:       # Manual run button in GitHub UI
 
 jobs:
   update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clone repo
+      - name: Checkout Repo
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -24,11 +24,11 @@ jobs:
       - name: Generate medium.json
         run: node generate-medium-json.js
 
-      - name: Commit and push changes
+      - name: Commit and Push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add medium.json
-          git commit -m "🤖 Update Medium posts via GitHub Action" || echo "No changes"
-          git pull --rebase origin main
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.ref }}
+          git commit -m "🤖 Update Medium posts" || echo "No changes"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push origin HEAD:${{ github.ref }}
